@@ -15,7 +15,7 @@ class Puppeteer {
   async start () {
     this.browser = await puppeteer.launch({
       executablePath: this.configs.chromium,
-      headless: false
+      headless: true
     })
     this.page = await this.browser.newPage()
     this.page.setDefaultNavigationTimeout(600000)
@@ -70,8 +70,8 @@ class Puppeteer {
       })))
       console.log(`最大页码数为：${this.imgPgs}`)
     }
-    if (this.configs.options.notFound) {
-      if (resp.url() === this.configs.options.notFound) {
+    if (this.configs.options.notFoudPage) {
+      if (resp.url() === this.configs.options.notFoudPage) {
         console.log('已跳转到无效页面')
         return Promise.reject()
       }
@@ -121,7 +121,8 @@ class Puppeteer {
   }
 
   multiRequest (url, num, init, callback, options) {
-    http.get(url, function(res) {
+    const self = this
+    https.get(url, function(res) {
       var html = ''
   
       if(init && init != null) { init(res) }
@@ -137,7 +138,7 @@ class Puppeteer {
       console.log('Cant get response from URL, ' +
         `start the next request, rest num ${num--}`)
       if(num > 0) {
-        this.multiRequest(url, num, null, callback, options)
+        self.multiRequest(url, num, null, callback, options)
       } else {
         const errMsg = 'Cant connect to the url, please check the internet'
         console.log(errMsg)
